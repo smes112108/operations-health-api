@@ -1,0 +1,59 @@
+{
+  "artifact": "Independent AI-assisted Operations Health API demo",
+  "synthetic_data_only": true,
+  "verification_status": "local_python_api_and_tests_passed_container_runtime_unverified",
+  "python": "3.12.14",
+  "syntax_compileall": {
+    "passed": true,
+    "scope": [
+      "app",
+      "tests",
+      "scripts"
+    ]
+  },
+  "integration_tests": {
+    "executed": true,
+    "passed": 15,
+    "failed": 0,
+    "duration_seconds": 2.32,
+    "command": ".venv/bin/python -m pytest -q",
+    "warning": "Starlette TestClient warns httpx support is deprecated; tests passed using installed httpx0.28.1"
+  },
+  "live_http_walkthrough": {
+    "executed": true,
+    "passed": 11,
+    "failed": 0,
+    "base_url": "http://127.0.0.1:8765",
+    "evidence": "walkthrough.json",
+    "observed_status_codes": [
+      200,
+      201,
+      404,
+      409,
+      422
+    ]
+  },
+  "compose_config": {
+    "executed": true,
+    "exit_code": 0
+  },
+  "docker_runtime": {
+    "executed": false,
+    "client_version": "20.10.20",
+    "reason": "docker version could not connect to daemon at unix:///var/run/docker.sock; no image build or container startup was performed"
+  },
+  "recorded_at": "2026-10-24T09:51:36.911906+00:00",
+  "package_versions": {
+    "fastapi": "0.162.0",
+    "uvicorn": "0.54.0",
+    "pydantic": "2.14.1",
+    "starlette": "1.9.0",
+    "httpx": "0.28.1",
+    "pytest": "9.1.1"
+  },
+  "server": {
+    "bind": "127.0.0.1",
+    "port": 8765
+  },
+  "dependency_lock": "requirements-lock.txt"
+}
