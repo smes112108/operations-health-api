@@ -1,0 +1,222 @@
+{
+  "recorded_at": "2026-10-24T09:51:27.072369+00:00",
+  "base_url": "http://127.0.0.1:8765",
+  "synthetic": true,
+  "passed": 11,
+  "scenarios": [
+    {
+      "scenario": "Liveness",
+      "method": "GET",
+      "path": "/health/live",
+      "expected_status": 200,
+      "actual_status": 200,
+      "response": {
+        "status": "alive"
+      }
+    },
+    {
+      "scenario": "Readiness",
+      "method": "GET",
+      "path": "/health/ready",
+      "expected_status": 200,
+      "actual_status": 200,
+      "response": {
+        "status": "ready",
+        "storage": "sqlite"
+      }
+    },
+    {
+      "scenario": "New event",
+      "method": "POST",
+      "path": "/events",
+      "expected_status": 201,
+      "actual_status": 201,
+      "response": {
+        "duplicate": false,
+        "event": {
+          "id": 1,
+          "event_key": "demo-8b555e25a1",
+          "device_id": "camera-01",
+          "occurred_at": "2026-10-24T09:51:27.072369+00:00",
+          "received_at": "2026-10-24T09:51:27.177453+00:00",
+          "state": "degraded",
+          "message": "Synthetic glare detected; operator review recommended"
+        }
+      }
+    },
+    {
+      "scenario": "Safe identical retry",
+      "method": "POST",
+      "path": "/events",
+      "expected_status": 200,
+      "actual_status": 200,
+      "response": {
+        "duplicate": true,
+        "event": {
+          "id": 1,
+          "event_key": "demo-8b555e25a1",
+          "device_id": "camera-01",
+          "occurred_at": "2026-10-24T09:51:27.072369+00:00",
+          "received_at": "2026-10-24T09:51:27.177453+00:00",
+          "state": "degraded",
+          "message": "Synthetic glare detected; operator review recommended"
+        }
+      }
+    },
+    {
+      "scenario": "Conflicting retry",
+      "method": "POST",
+      "path": "/events",
+      "expected_status": 409,
+      "actual_status": 409,
+      "response": {
+        "detail": "event_key already belongs to a different payload"
+      }
+    },
+    {
+      "scenario": "Invalid state",
+      "method": "POST",
+      "path": "/events",
+      "expected_status": 422,
+      "actual_status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "literal_error",
+            "loc": [
+              "body",
+              "state"
+            ],
+            "msg": "Input should be 'operational', 'degraded' or 'offline'",
+            "input": "PASS",
+            "ctx": {
+              "expected": "'operational', 'degraded' or 'offline'"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "scenario": "Unknown device",
+      "method": "POST",
+      "path": "/events",
+      "expected_status": 404,
+      "actual_status": 404,
+      "response": {
+        "detail": "Unknown device_id; inspect GET /devices"
+      }
+    },
+    {
+      "scenario": "Stale event",
+      "method": "POST",
+      "path": "/events",
+      "expected_status": 201,
+      "actual_status": 201,
+      "response": {
+        "duplicate": false,
+        "event": {
+          "id": 2,
+          "event_key": "stale-8b555e25a1",
+          "device_id": "lighting-01",
+          "occurred_at": "2026-10-24T09:41:27.072369+00:00",
+          "received_at": "2026-10-24T09:51:27.214466+00:00",
+          "state": "operational",
+          "message": "Synthetic historical heartbeat"
+        }
+      }
+    },
+    {
+      "scenario": "Fresh event",
+      "method": "POST",
+      "path": "/events",
+      "expected_status": 201,
+      "actual_status": 201,
+      "response": {
+        "duplicate": false,
+        "event": {
+          "id": 3,
+          "event_key": "fresh-8b555e25a1",
+          "device_id": "edge-01",
+          "occurred_at": "2026-10-24T09:51:27.072369+00:00",
+          "received_at": "2026-10-24T09:51:27.223018+00:00",
+          "state": "operational",
+          "message": "Synthetic edge heartbeat"
+        }
+      }
+    },
+    {
+      "scenario": "Filtered history",
+      "method": "GET",
+      "path": "/events?device_id=camera-01&state=degraded&limit=5",
+      "expected_status": 200,
+      "actual_status": 200,
+      "response": {
+        "items": [
+          {
+            "id": 1,
+            "event_key": "demo-8b555e25a1",
+            "device_id": "camera-01",
+            "occurred_at": "2026-10-24T09:51:27.072369+00:00",
+            "received_at": "2026-10-24T09:51:27.177453+00:00",
+            "state": "degraded",
+            "message": "Synthetic glare detected; operator review recommended"
+          }
+        ],
+        "total": 1,
+        "limit": 5,
+        "offset": 0
+      }
+    },
+    {
+      "scenario": "Diagnostic summary",
+      "method": "GET",
+      "path": "/diagnostics/summary",
+      "expected_status": 200,
+      "actual_status": 200,
+      "response": {
+        "generated_at": "2026-10-24T09:51:27.240590+00:00",
+        "stale_after_seconds": 300,
+        "overall": "attention_required",
+        "counts": {
+          "healthy": 1,
+          "attention": 1,
+          "stale": 1,
+          "unknown": 0,
+          "clock_skew": 0
+        },
+        "devices": [
+          {
+            "id": "camera-01",
+            "name": "Inspection camera",
+            "kind": "camera",
+            "reported_state": "degraded",
+            "diagnostic": "attention",
+            "last_event_key": "demo-8b555e25a1",
+            "age_seconds": 0.168,
+            "reason": "Synthetic glare detected; operator review recommended"
+          },
+          {
+            "id": "edge-01",
+            "name": "Edge controller",
+            "kind": "edge",
+            "reported_state": "operational",
+            "diagnostic": "healthy",
+            "last_event_key": "fresh-8b555e25a1",
+            "age_seconds": 0.168,
+            "reason": "Synthetic edge heartbeat"
+          },
+          {
+            "id": "lighting-01",
+            "name": "Inspection lighting",
+            "kind": "lighting",
+            "reported_state": "operational",
+            "diagnostic": "stale",
+            "last_event_key": "stale-8b555e25a1",
+            "age_seconds": 600.168,
+            "reason": "Latest event exceeds the freshness threshold"
+          }
+        ]
+      }
+    }
+  ]
+}
