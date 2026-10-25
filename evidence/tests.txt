@@ -1,0 +1,14 @@
+Command: .venv/bin/python -m pytest -q
+Working directory: portfolio/backend-demo
+Runtime: Python 3.12.14
+
+...............                                                          [100%]
+15 passed, 1 warning in 2.32s
+
+Warning: StarletteDeprecationWarning: Using httpx with starlette.testclient is deprecated; install httpx2 instead.
+
+Cases: health/OpenAPI, duplicate retry/key conflict, 8 concurrent retries,
+equivalent timezone normalization, all-device healthy summary,
+5 input validation scenarios, unknown device/pagination bounds,
+filters/out-of-order events, unknown/stale/future diagnostics,
+persistence across restart, storage failure/readiness vs liveness.
